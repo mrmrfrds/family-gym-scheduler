@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1115" />
+  <script>
+    // Apply theme before the stylesheet loads to prevent a bright/dark flash.
+    (function () {
+      var theme = "dark";
+      try {
+        var saved = localStorage.getItem("form_theme");
+        theme = (saved === "light" || saved === "dark") ? saved :
+          (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      } catch (e) { /* Storage may be blocked by the browser. */ }
+      document.documentElement.dataset.theme = theme;
+      document.querySelector('meta[name="theme-color"]').content = theme === "light" ? "#f5f7f2" : "#0d1115";
+    })();
+  </script>
+  <meta name="description" content="A personal home gym, meal and progress planner for the whole crew." />
+  <title>Add Member / FORM Gym Planner</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="config.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body data-page="add-member" class="subpage">
+  <div class="app-shell">
+    <header class="topbar">
+      <a href="index.html" data-page-link="home" class="brand" aria-label="FORM home"><span class="brand-mark">F<span class="brand-dot">.</span></span><span class="brand-caption">FORM<span> / FITNESS STUDIO</span></span></a>
+      <div class="header-actions">
+        <span id="activeMemberBadge" class="active-member">ACTIVE MEMBER</span><span id="syncStatus" class="sync-pill"><span class="status-dot"></span>Connecting…</span>
+        <button class="icon-button member-switch" type="button" data-action="switch-member" aria-label="Switch member" title="Switch member">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19v-1.1A5.2 5.2 0 0 1 8.7 12.7h.6a5.2 5.2 0 0 1 5.2 5.2V19M16.5 5.8a3 3 0 0 1 0 5.7M17.2 13.5a4.3 4.3 0 0 1 3.3 4.2V19"/></svg>
+        </button>
+        <button class="icon-button theme-toggle" type="button" data-action="toggle-theme" aria-label="Switch appearance" title="Switch appearance">
+          <svg class="theme-icon icon-sun" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+          <svg class="theme-icon icon-moon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.9 13a9 9 0 0 1-9.9-9.9A9 9 0 1 0 20.9 13Z"/></svg>
+        </button>
+        <button class="icon-button" type="button" data-action="settings" aria-label="Google Sheets sync status" title="Google Sheets sync">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .15.17 1.41 1.09-1.41 2.44-1.71-.62a8 8 0 0 1-1.64.94L15.9 21h-2.82l-.31-1.98a8 8 0 0 1-1.64-.94l-1.71.62-1.41-2.44L9.42 15a8 8 0 0 1 0-1.9L8.01 12l1.41-2.44 1.71.62a8 8 0 0 1 1.64-.94L13.08 7h2.82l.31 2.24a8 8 0 0 1 1.64.94l1.71-.62L20.97 12l-1.41 1.1a8 8 0 0 1-.16 1.9Z" transform="translate(-2 -2)"/></svg>
+        </button>
+      </div>
+    </header>
+    <nav class="desktop-nav" aria-label="Primary navigation"><a href="index.html" data-page-link="home" class="page-nav-link " >Dashboard</a><a href="plans.html" data-page-link="plans" class="page-nav-link " aria-current="page">Workout Plans</a><a href="schedule.html" data-page-link="schedule" class="page-nav-link " >Workout Schedule</a><a href="diet.html" data-page-link="diet" class="page-nav-link " >Diet Plan</a><a href="meals.html" data-page-link="meals" class="page-nav-link " >Diet Schedule</a></nav>
+    <main id="main-content" class="join-main">
+    <a href="index.html?choose=1" class="back-link" data-action="return-welcome">← Back to family profiles</a>
+    <div class="join-header"><span class="section-overline">WELCOME TO FORM</span><h1>Create a family profile<span class="join-dot">.</span></h1>
+      <p>Add your details, choose how to start, and you’ll go straight to your own dashboard. You can edit training and food plans at any time.</p></div>
+    <div id="modeNotice" class="mode-notice" role="status">Demo mode: a new member is temporary until you connect Google Sheets. <button type="button" data-action="settings">Connect Sheets ↗</button></div>
+    <form id="newMemberForm" class="join-card">
+      <div class="editor-section-head"><div><span class="section-overline">01 / YOUR DETAILS</span><h2>Tell us about yourself</h2></div></div>
+      <div class="form-grid">
+        <label class="full">Display name<input class="text-input" type="text" name="name" minlength="1" maxlength="30" placeholder="e.g. Farah" required></label>
+        <label>Height (cm)<input class="text-input" type="number" min="100" max="230" name="height" value="165" required></label>
+        <label>Current weight (kg)<input class="text-input" type="number" min="25" max="300" step="0.1" name="weight" value="65" required></label>
+        <label>Fitness goal<select id="newGoal" class="text-input" name="goal"><option value="muscle">Build muscle & strength</option><option value="fatloss">Lose fat & build strength</option></select></label>
+        <label>Daily calories (kcal)<input class="text-input" type="number" min="1200" max="5500" step="10" name="calories" value="2400" required></label>
+        <label>Protein target (g)<input class="text-input" type="number" min="30" max="300" step="5" name="protein" value="110" required></label>
+        <label>Water target (L)<input class="text-input" type="number" min="1" max="6" step="0.1" name="water" value="2.2" required></label>
+      </div>
+      <p class="fine-print">Calorie, protein and water numbers are editable example targets for adults, not medical advice. Adjust for age, activity and health. If this plan is for a child or teen, seek age-appropriate guidance rather than using these adult defaults.</p>
+      <div class="editor-section-head section-gap"><div><span class="section-overline">02 / YOUR STARTER PLAN</span><h2>How would you like to begin?</h2></div></div>
+      <div class="join-options">
+        <label class="join-choice"><input type="radio" name="programMode" value="recommended" checked><span><strong>Recommended starter</strong><small>A simple strength, recovery and meal template based on your goal</small></span></label>
+        <label class="join-choice"><input type="radio" name="programMode" value="template"><span><strong>Copy a family member</strong><small>Start with an existing plan, then edit your own independent copy</small></span></label>
+        <label class="join-choice"><input type="radio" name="programMode" value="blank"><span><strong>Build from scratch</strong><small>Make an empty weekly schedule and customize it from Plan Builder</small></span></label>
+      </div>
+      <div id="templatePicker" class="template-picker hidden"><label>Copy whose plan?<select class="text-input" name="templateProfile" id="templateMember"><option value="amir">Amir</option><option value="nabilah">Nabilah</option><option value="hana">Hana</option></select></label></div>
+      <p id="programDescription" class="program-description" role="status">A prebuilt seven-day home workout schedule and five simple daily meals will be created for this member.</p>
+      <div class="join-bottom"><a href="index.html?choose=1" class="button-outline" data-action="return-welcome">Cancel</a><button class="button-primary" type="submit">Create member & open dashboard ↗</button></div>
+    </form>
+    <footer class="footer"><span>FORM / FAMILY GYM</span><span>Personal workouts. Shared motivation.</span></footer>
+  </main>
+  </div>
+
+  <dialog id="settingsDialog" class="dialog">
+    <div class="dialog-heading"><div><span class="section-overline">CLOUD STORAGE</span><h2>Google Sheets sync</h2></div><button type="button" data-close class="icon-button" aria-label="Close">×</button></div>
+    <p class="dialog-desc">Your family's gym app connects to Google Sheets automatically. There is no URL or key to enter on this device.</p>
+    <p id="connectFeedback" class="connect-feedback" role="status">Checking connection…</p>
+    <div class="dialog-actions"><button type="button" data-close class="button-ghost">Close</button><button type="button" class="button-primary" data-action="retry-connect">Retry connection ↻</button></div>
+  </dialog>
+
+  <dialog id="profileDialog" class="dialog">
+    <form id="profileForm" method="dialog">
+      <div class="dialog-heading"><div><span class="section-overline">PERSONAL SETUP</span><h2 id="profileFormTitle">Edit profile</h2></div><button type="button" data-close class="icon-button" aria-label="Close">×</button></div>
+      <p class="dialog-desc">Calorie targets are starting estimates for adults—not individually calculated prescriptions. Update them based on age, activity and progress.</p>
+      <input type="hidden" name="id" id="editId" />
+      <div class="form-grid">
+        <label>Display name<input type="text" class="text-input" name="name" maxlength="30" required /></label>
+        <label>Training goal<select class="text-input" name="goal"><option value="muscle">Build muscle</option><option value="fatloss">Lose fat + build strength</option></select></label>
+        <label>Height (cm)<input type="number" min="100" max="230" step="1" name="height" class="text-input" required /></label>
+        <label>Current weight (kg)<input type="number" min="25" max="300" step="0.1" name="weight" class="text-input" required /></label>
+        <label>Daily calories (kcal)<input type="number" min="1200" max="5500" step="10" name="calories" class="text-input" required /></label>
+        <label>Protein goal (g)<input type="number" min="30" max="300" step="5" name="protein" class="text-input" required /></label>
+        <label>Water goal (L)<input type="number" min="1" max="6" step="0.1" name="water" class="text-input" required /></label>
+      </div>
+      <div class="dialog-actions"><button type="button" data-close class="button-ghost">Cancel</button><button type="submit" class="button-primary">Save profile <span>↗</span></button></div>
+    </form>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
